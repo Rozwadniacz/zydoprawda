@@ -22,11 +22,21 @@ function wczytajArtykuly() {
             const articles = text.split('---').map(a => a.trim()).filter(a => a.length > 0);
             articlesDiv.innerHTML = articles.map(a => {
                 const tytul = a.match(/Tytuł:\s*(.*)/)?.[1] || '';
-                const tresc = a.match(/Treść:\s*([\s\S]*)/)?.[1] || '';
+                let tresc = a.match(/Treść:\s*([\s\S]*)/)?.[1] || '';
                 if (tytul && tresc) {
+                    // Pogrubienie, powiększenie i przeniesienie "Szacunkowe straty:" do nowej linii
+                    tresc = tresc.replace(
+                        /(Szacunkowe straty:[^\n]*)/g,
+                        '<br><strong style="font-size:1.15em;">$1</strong>'
+                    );
                     return `<article><h2>${tytul}</h2><p>${tresc.trim()}</p></article>`;
                 }
                 return '';
             }).join('');
         });
 }
+window.onload = function() {
+    aktualizujLicznik();
+    setInterval(aktualizujLicznik, 5000);
+    wczytajArtykuly();
+};
